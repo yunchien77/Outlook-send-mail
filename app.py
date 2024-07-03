@@ -8,6 +8,7 @@ from email import encoders
 from werkzeug.utils import secure_filename
 from get_data_from_ragic import get_data_by_tag
 from dotenv import load_dotenv
+from pypinyin import lazy_pinyin
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
@@ -55,8 +56,10 @@ def send_email():
         if recipient_group and email_subject and email_content and attachment and allowed_file(attachment.filename):
             #filename = secure_filename(attachment.filename)
             #filename = attachment.filename
-            filename = secure_filename(os.path.basename(attachment.filename))
-
+            #filename = secure_filename(os.path.basename(attachment.filename))
+            filename = secure_filename(''.join(lazy_pinyin(attachment.filename)))
+            print("***", filename)
+            
             attachment_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             attachment.save(attachment_path)
 
