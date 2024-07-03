@@ -42,16 +42,13 @@ def send_email():
     
     if request.method == 'POST':
         recipient_group = request.form.get('recipient_group')
-        print("recipient_group: ", recipient_group)
-        
+        email_subject = request.form.get('email_subject')
         email_content = request.form.get('email_content')
-        print("email_content: ", email_content)
         
-        if recipient_group and email_content:
+        if recipient_group and email_subject and email_content:
             customers = get_data_by_tag(recipient_group)
             if customers:
-                print(f"customer:\n{customers}")
-                success = send_emails_to_customers(customers, email_content)
+                success = send_emails_to_customers(customers, email_subject, email_content)
                 if success:
                     return redirect(url_for('send_email', status='sent'))
                 else:
@@ -59,9 +56,11 @@ def send_email():
     
     return render_template('send_email.html')
 
-def send_emails_to_customers(customers, content):
+def send_emails_to_customers(customers, subject, content):
     email = session['email']
     password = session['password']
+    #print(f"----------email: {email}-----------")
+    #print(type(email))
 
     try:
         server = smtplib.SMTP('smtp.outlook.com', 587)
@@ -74,7 +73,7 @@ def send_emails_to_customers(customers, content):
             print(f'Sending email to {receiver_name} : {receiver_email}')
 
             message = MIMEMultipart("alternative")
-            message["Subject"] = "Important Notice"
+            message["Subject"] = subject
             message["From"] = email
             message["To"] = receiver_email
             

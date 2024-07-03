@@ -23,6 +23,7 @@ body {
 h2 {
     text-align: center;
     margin-bottom: 20px;
+    color: #209675;
 }
 
 form {
@@ -46,7 +47,7 @@ input[type="submit"] {
 }
 
 input[type="submit"] {
-    background-color: #2e7d32;
+    background-color: #209675;
     color: white;
     cursor: pointer;
 }
