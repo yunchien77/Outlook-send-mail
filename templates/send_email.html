@@ -10,19 +10,18 @@
     <div class="container">
         <h2>Send Emails</h2>
         <form method="POST" action="{{ url_for('send_email') }}">
-
             <label>Select recipient group:</label><br>
-            <select name="recipient_group">
+            <select name="recipient_group" required>
                 <option value="" selected disabled hidden>
                     <請選擇>
                 </option>
-                <option value="group1">合作夥伴</option>
-                <option value="group2">產品客戶</option>
-                <option value="group3">朋友</option>
+                <option value="合作夥伴">合作夥伴</option>
+                <option value="產品客戶">產品客戶</option>
+                <option value="朋友">朋友</option>
             </select><br><br>
 
             <label>Enter email content:</label><br>
-            <textarea name="email_content" rows="15" cols="40"></textarea><br><br>
+            <textarea name="email_content" rows="15" cols="40" required></textarea><br><br>
 
             <input type="submit" value="Send Email">
         </form>
