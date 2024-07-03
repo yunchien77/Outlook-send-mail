@@ -4,13 +4,10 @@ import pandas as pd
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-#from cfp import EmailSender  # Assuming EmailSender is a custom class handling email configuration
+
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # 需要設置一個密鑰用於Flask的session
-
-# 初始化 EmailSender，使用 config.ini 中的設定
-#sender = EmailSender('config.ini')
 
 def send_emails(file_name, email, password):
     if not os.path.isfile(file_name):

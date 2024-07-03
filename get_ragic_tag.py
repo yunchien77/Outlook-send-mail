@@ -2,7 +2,7 @@ import requests
 from dotenv import load_dotenv
 import os
 ####################
-target_tag = '合作夥伴'
+target_tag = '朋友'
 ####################
 load_dotenv()
 API_KEY = os.getenv('RAGIC_API_KEY')
@@ -22,7 +22,7 @@ API_ENDPOINT_LISTING_PAGE = f'https://{SERVER_URL}/{ACCOUNT_NAME}/{TAB}/{SHEET_I
 response = requests.get(API_ENDPOINT_LISTING_PAGE, params=params, headers={'Authorization': 'Basic '+API_KEY})
 print(response.text)
 
-data = response.json()  # 將 JSON 資料轉換成 Python 字典
+data = response.json() 
 
 for key, value in data.items():
     name = value.get('姓名', '')

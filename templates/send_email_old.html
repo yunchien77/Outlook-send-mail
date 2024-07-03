@@ -10,20 +10,8 @@
     <div class="container">
         <h2>Send Emails</h2>
         <form method="POST" action="{{ url_for('send_email') }}">
-
-            <label>Select recipient group:</label><br>
-            <select name="recipient_group">
-                <option value="" selected disabled hidden>
-                    <請選擇>
-                </option>
-                <option value="group1">合作夥伴</option>
-                <option value="group2">產品客戶</option>
-                <option value="group3">朋友</option>
-            </select><br><br>
-
-            <label>Enter email content:</label><br>
-            <textarea name="email_content" rows="15" cols="40"></textarea><br><br>
-
+            <label>Enter file name:</label><br>
+            <input type="text" name="file_name"><br><br>
             <input type="submit" value="Send Email">
         </form>
     </div>
