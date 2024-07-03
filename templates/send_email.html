@@ -9,22 +9,23 @@
 <body>
     <div class="container">
         <h2>Send Emails</h2>
-        <form method="POST" action="{{ url_for('send_email') }}">
+        <form method="POST" action="{{ url_for('send_email') }}" enctype="multipart/form-data">
             <label>Select recipient group:</label><br>
             <select name="recipient_group" required>
-                <option value="" selected disabled hidden>
-                    <請選擇>
-                </option>
+                <option value="" selected disabled hidden>請選擇</option>
                 <option value="合作夥伴">合作夥伴</option>
                 <option value="產品客戶">產品客戶</option>
                 <option value="朋友">朋友</option>
             </select><br><br>
 
-            <label>Enter email subject:</label><br>
+            <label>Enter email subject:</label>
             <input type="text" name="email_subject" required><br><br>
 
             <label>Enter email content:</label><br>
             <textarea name="email_content" rows="15" cols="40" required></textarea><br><br>
+
+            <label>Attach a file:</label>
+            <input type="file" name="attachment" required><br><br>
 
             <input type="submit" value="Send Email">
         </form>
@@ -32,7 +33,6 @@
 
     <!-- JavaScript for showing alert -->
     <script>
-        // Check if the URL has the parameter 'status' indicating email sent
         const urlParams = new URLSearchParams(window.location.search);
         const status = urlParams.get('status');
 
