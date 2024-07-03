@@ -12,12 +12,9 @@ ACCOUNT_NAME = 'cancerfree'
 TAB = 'forms5'
 SHEET_INDEX = '4'
 
-ROW_INDEX = '1'
-
 params = {
     'api': '',
     'v': 3,
-    'filter': f'1={ROW_INDEX}'
 }
 
 API_ENDPOINT_LISTING_PAGE = f'https://{SERVER_URL}/{ACCOUNT_NAME}/{TAB}/{SHEET_INDEX}'
