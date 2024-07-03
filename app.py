@@ -15,7 +15,7 @@ app.secret_key = 'your_secret_key'
 load_dotenv()
 
 UPLOAD_FOLDER = 'uploads'
-ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'csv', 'xlsx'}
+ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'csv', 'xlsx', 'docx'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 def allowed_file(filename):
@@ -53,7 +53,10 @@ def send_email():
         attachment = request.files['attachment']
 
         if recipient_group and email_subject and email_content and attachment and allowed_file(attachment.filename):
-            filename = secure_filename(attachment.filename)
+            #filename = secure_filename(attachment.filename)
+            #filename = attachment.filename
+            filename = secure_filename(os.path.basename(attachment.filename))
+
             attachment_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             attachment.save(attachment_path)
 
@@ -102,6 +105,7 @@ def send_emails_to_customers(customers, subject, content, attachment_path):
             try:
                 server.sendmail(email, receiver_email, message.as_string())
                 print(f'Email sent to {receiver_email} successfully')
+                
             except Exception as e:
                 print(f'Failed to send email to {receiver_email}. Error: {str(e)}')
                 continue
