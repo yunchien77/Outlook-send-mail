@@ -52,16 +52,19 @@ def send_email():
         email_subject = request.form.get('email_subject')
         email_content = request.form.get('email_content')
         attachment = request.files['attachment']
+        #attachment = request.files.get('attachment')
 
-        if recipient_group and email_subject and email_content and attachment and allowed_file(attachment.filename):
-            #filename = secure_filename(attachment.filename)
-            #filename = attachment.filename
-            #filename = secure_filename(os.path.basename(attachment.filename))
-            filename = secure_filename(''.join(lazy_pinyin(attachment.filename)))
-            print("***", filename)
-            
-            attachment_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            attachment.save(attachment_path)
+        if recipient_group and email_subject and email_content:
+            attachment_path = None
+            if attachment and allowed_file(attachment.filename):
+                #filename = secure_filename(attachment.filename)
+                #filename = attachment.filename
+                #filename = secure_filename(os.path.basename(attachment.filename))
+                filename = secure_filename(''.join(lazy_pinyin(attachment.filename)))
+                print("***", filename)
+                
+                attachment_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                attachment.save(attachment_path)
 
             customers = get_data_by_tag(recipient_group)
             if customers:
@@ -92,18 +95,20 @@ def send_emails_to_customers(customers, subject, content, attachment_path):
             message["From"] = email
             message["To"] = receiver_email
 
-            html_content = content.replace('{receiver_name}', receiver_name)
+            html_content = content.replace('\n', '<br>').replace('{receiver_name}', receiver_name)
             message.attach(MIMEText(html_content, "html"))
 
-            with open(attachment_path, "rb") as attachment:
-                part = MIMEBase("application", "octet-stream")
-                part.set_payload(attachment.read())
-                encoders.encode_base64(part)
-                part.add_header(
-                    "Content-Disposition",
-                    f"attachment; filename= {os.path.basename(attachment_path)}",
-                )
-                message.attach(part)
+            # 如果有上傳附件
+            if attachment_path:
+                with open(attachment_path, "rb") as attachment:
+                    part = MIMEBase("application", "octet-stream")
+                    part.set_payload(attachment.read())
+                    encoders.encode_base64(part)
+                    part.add_header(
+                        "Content-Disposition",
+                        f"attachment; filename= {os.path.basename(attachment_path)}",
+                    )
+                    message.attach(part)
 
             try:
                 server.sendmail(email, receiver_email, message.as_string())
