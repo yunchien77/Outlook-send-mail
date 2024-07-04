@@ -51,24 +51,26 @@ def send_email():
         recipient_group = request.form.get('recipient_group')
         email_subject = request.form.get('email_subject')
         email_content = request.form.get('email_content')
-        attachment = request.files['attachment']
-        #attachment = request.files.get('attachment')
+        #attachment = request.files['attachment']
+        attachments = request.files.getlist('attachments')
 
         if recipient_group and email_subject and email_content:
-            attachment_path = None
-            if attachment and allowed_file(attachment.filename):
-                #filename = secure_filename(attachment.filename)
-                #filename = attachment.filename
-                #filename = secure_filename(os.path.basename(attachment.filename))
-                filename = secure_filename(''.join(lazy_pinyin(attachment.filename)))
-                print("***", filename)
-                
-                attachment_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-                attachment.save(attachment_path)
+            attachment_paths = []
+            for attachment in attachments:
+                if attachment and allowed_file(attachment.filename):
+                    #filename = secure_filename(attachment.filename)
+                    #filename = attachment.filename
+                    #filename = secure_filename(os.path.basename(attachment.filename))
+                    filename = secure_filename(''.join(lazy_pinyin(attachment.filename)))
+                    print("***", filename)
+                    
+                    attachment_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                    attachment.save(attachment_path)
+                    attachment_paths.append(attachment_path)
 
             customers = get_data_by_tag(recipient_group)
             if customers:
-                success = send_emails_to_customers(customers, email_subject, email_content, attachment_path)
+                success = send_emails_to_customers(customers, email_subject, email_content, attachment_paths)
                 if success:
                     return redirect(url_for('send_email', status='sent'))
                 else:
@@ -76,7 +78,7 @@ def send_email():
 
     return render_template('send_email.html')
 
-def send_emails_to_customers(customers, subject, content, attachment_path):
+def send_emails_to_customers(customers, subject, content, attachment_paths):
     email = session['email']
     password = session['password']
 
@@ -99,10 +101,10 @@ def send_emails_to_customers(customers, subject, content, attachment_path):
             message.attach(MIMEText(html_content, "html"))
 
             # 如果有上傳附件
-            if attachment_path:
-                with open(attachment_path, "rb") as attachment:
+            for attachment_path in attachment_paths:
+                with open(attachment_path, "rb") as attachment_file:
                     part = MIMEBase("application", "octet-stream")
-                    part.set_payload(attachment.read())
+                    part.set_payload(attachment_file.read())
                     encoders.encode_base64(part)
                     part.add_header(
                         "Content-Disposition",
