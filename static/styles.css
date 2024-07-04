@@ -45,6 +45,14 @@ textarea {
     resize: vertical;
 }
 
+small {
+    font-size: 13px;
+    color: #548870;
+    font-weight: bold;
+    /*font-style: italic;*/
+    margin-bottom: 8px;
+}
+
 input[type="text"],
 input[type="password"],
 input[type="submit"] {
