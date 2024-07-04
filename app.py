@@ -16,11 +16,13 @@ app.secret_key = 'your_secret_key'
 load_dotenv()
 
 UPLOAD_FOLDER = 'uploads'
-ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'csv', 'xlsx', 'docx'}
+#ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'csv', 'xlsx', 'docx'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
+'''
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+'''
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -57,11 +59,12 @@ def send_email():
         if recipient_group and email_subject and email_content:
             attachment_paths = []
             for attachment in attachments:
-                if attachment and allowed_file(attachment.filename):
+                #if attachment and allowed_file(attachment.filename):
+                if attachment:
                     #filename = secure_filename(attachment.filename)
                     #filename = attachment.filename
                     #filename = secure_filename(os.path.basename(attachment.filename))
-                    filename = secure_filename(''.join(lazy_pinyin(attachment.filename)))
+                    filename = secure_filename(''.join(lazy_pinyin(attachment.filename)))  # 將中文轉換成拼音
                     print("***", filename)
                     
                     attachment_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
@@ -97,7 +100,8 @@ def send_emails_to_customers(customers, subject, content, attachment_paths):
             message["From"] = email
             message["To"] = receiver_email
 
-            html_content = content.replace('\n', '<br>').replace('{receiver_name}', receiver_name)
+            ### 在郵件內文中添加{name}標籤會取代成郵件對應的名字
+            html_content = content.replace('\n', '<br>').replace('{name}', receiver_name)
             message.attach(MIMEText(html_content, "html"))
 
             # 如果有上傳附件
