@@ -7,6 +7,7 @@ from email.mime.base import MIMEBase
 from email import encoders
 from werkzeug.utils import secure_filename
 from get_data_from_ragic import get_data_by_tag
+from get_taglist import get_taglist
 from dotenv import load_dotenv
 from pypinyin import lazy_pinyin
 
@@ -16,13 +17,7 @@ app.secret_key = 'your_secret_key'
 load_dotenv()
 
 UPLOAD_FOLDER = 'uploads'
-#ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'csv', 'xlsx', 'docx'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-
-'''
-def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-'''
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -49,24 +44,19 @@ def send_email():
     if 'email' not in session:
         return redirect(url_for('index'))
 
+    taglist = get_taglist()
+
     if request.method == 'POST':
         recipient_group = request.form.get('recipient_group')
         email_subject = request.form.get('email_subject')
         email_content = request.form.get('email_content')
-        #attachment = request.files['attachment']
         attachments = request.files.getlist('attachments')
 
         if recipient_group and email_subject and email_content:
             attachment_paths = []
             for attachment in attachments:
-                #if attachment and allowed_file(attachment.filename):
                 if attachment:
-                    #filename = secure_filename(attachment.filename)
-                    #filename = attachment.filename
-                    #filename = secure_filename(os.path.basename(attachment.filename))
-                    filename = secure_filename(''.join(lazy_pinyin(attachment.filename)))  # 將中文轉換成拼音
-                    print("***", filename)
-                    
+                    filename = secure_filename(''.join(lazy_pinyin(attachment.filename)))
                     attachment_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
                     attachment.save(attachment_path)
                     attachment_paths.append(attachment_path)
@@ -79,7 +69,7 @@ def send_email():
                 else:
                     return redirect(url_for('send_email', status='error'))
 
-    return render_template('send_email.html')
+    return render_template('send_email.html', taglist=taglist)
 
 def send_emails_to_customers(customers, subject, content, attachment_paths):
     email = session['email']
